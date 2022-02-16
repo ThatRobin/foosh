@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:husbandry/fishy_business",
+    "display": {
+        "title": {
+            "text": "Something Seems Fishy"
+        },
+        "description": {
+            "text": "You caught a fish! or... did you?"
+        },
+        "icon": {
+            "item": "foosh:bone_rod"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false,
+        "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+    },
+    "criteria": {
+        "test": {
+            "trigger": "minecraft:fishing_rod_hooked",
+            "conditions": {
+                "entity": {
+                    "type": "minecraft:silverfish"
+                }
+            }
+        }
+    },
+    "rewards": {
+        "experience": 150
+    }
+}

@@ -1,5 +1,10 @@
 package thatrobin.foosh.mixin;
 
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import thatrobin.foosh.Foosh;
+import thatrobin.foosh.api.ShulkEntity;
 import thatrobin.foosh.item.AFishingRodItem;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
@@ -35,10 +40,8 @@ public class FishingBobberEntityRendererMixin {
     private int mod(int i) {
         ItemStack itemStack = gofish_owner.getMainHandStack();
 
-        // previous condition was hit
         if (itemStack.getItem() != Items.FISHING_ROD) {
             if(itemStack.getItem() instanceof AFishingRodItem) {
-                // undo change
                 return -i;
             }
         }

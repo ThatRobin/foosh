@@ -23,14 +23,18 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
     private final int baseLure;
     private final int baseLOTS;
     private final boolean lavaProof;
+    private final boolean redstone;
+    private final boolean shulk;
 
-    public AFishingRodItem(Settings settings, SoundInstance retrieve, SoundInstance cast, int baseLure, int baseLOTS, boolean lavaProof) {
+    public AFishingRodItem(Settings settings, SoundInstance retrieve, SoundInstance cast, int baseLure, int baseLOTS, boolean lavaProof, boolean redstone, boolean shulk) {
         super(settings);
         this.retrieve = retrieve;
         this.cast = cast;
         this.baseLure = baseLure;
         this.baseLOTS = baseLOTS;
         this.lavaProof = lavaProof;
+        this.redstone = redstone;
+        this.shulk = shulk;
     }
 
     @Override
@@ -77,6 +81,8 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
                 FishingBobberEntity bobber = new FishingBobberEntity(user, world, lots, lure);
                 world.spawnEntity(bobber);
                 ((FireproofEntity) bobber).setFireproof(lavaProof);
+                ((RedstoneEntity) bobber).setRedstone(redstone);
+                ((ShulkEntity) bobber).setShulk(shulk);
             }
 
             user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -91,7 +97,11 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
     }
 
     public boolean canFishInLava() {
-        return true;
+        return lavaProof;
+    }
+
+    public boolean canFishInAir() {
+        return redstone;
     }
 
     public static class Builder {
@@ -102,6 +112,8 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
         private int baseLure = 0;
         private int baseLOTS = 0;
         private boolean lavaProof = false;
+        private boolean redstone = false;
+        private boolean shulk = false;
 
         public Builder() {
 
@@ -142,8 +154,19 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
             return this;
         }
 
+        public Builder redstone(boolean redstone) {
+            this.redstone = redstone;
+            return this;
+        }
+
+        public Builder shulk(boolean shulk) {
+            this.shulk = shulk;
+            return this;
+        }
+
+
         public AFishingRodItem build() {
-            return new AFishingRodItem(settings, retrieve, cast, baseLure, baseLOTS, lavaProof);
+            return new AFishingRodItem(settings, retrieve, cast, baseLure, baseLOTS, lavaProof, redstone, shulk);
         }
     }
 }

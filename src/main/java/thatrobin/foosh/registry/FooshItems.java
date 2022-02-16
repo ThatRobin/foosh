@@ -1,5 +1,6 @@
 package thatrobin.foosh.registry;
 
+import net.minecraft.item.ItemGroup;
 import thatrobin.foosh.Foosh;
 import thatrobin.foosh.api.SoundInstance;
 import thatrobin.foosh.item.AFishingRodItem;
@@ -10,14 +11,35 @@ import net.minecraft.util.registry.Registry;
 
 public class FooshItems {
 
-    //public static Item BLAZE_ROD = register("blaze_rod", new AFishingRodItem(new FabricItemSettings(), new SoundInstance(SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, 0.5f, SoundInstance.DEFAULT_PITCH), new SoundInstance(SoundEvents.ENTITY_FISHING_BOBBER_THROW, 0.5f, SoundInstance.DEFAULT_PITCH), 10, 10, true));
-    public static Item BLAZE_ROD = register("blaze_rod", new AFishingRodItem.Builder().lavaProof(true).build());
+    public static Item BAMBOO_ROD = new AFishingRodItem.Builder().withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+    public static Item BLAZE_ROD = new AFishingRodItem.Builder().lavaProof(true).withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+    public static Item BONE_ROD = new AFishingRodItem.Builder().withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+    public static Item END_ROD = new AFishingRodItem.Builder().shulk(true).withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+    public static Item PRISMARINE_ROD = new AFishingRodItem.Builder().withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+    public static Item REDSTONE_ROD = new AFishingRodItem.Builder().redstone(true).withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
+
+    public static Item OBSIDIFISH = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+    public static Item PYROYSTER = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+    public static Item GOLDFISH = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+    public static Item LAPLAICE = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+    public static Item END_SNAPPER = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+
+    public static void register() {
+        register("bamboo_rod", BAMBOO_ROD);
+        register("blaze_rod", BLAZE_ROD);
+        register("bone_rod", BONE_ROD);
+        register("end_rod", END_ROD);
+        register("prismarine_rod", PRISMARINE_ROD);
+        register("redstone_rod", REDSTONE_ROD);
+
+        register("obsidifish", OBSIDIFISH);
+        register("pyroyster", PYROYSTER);
+        register("goldfish", GOLDFISH);
+        register("laplaice", LAPLAICE);
+        register("end_snapper", END_SNAPPER);
+    }
 
     public static Item register(String name, Item item) {
         return Registry.register(Registry.ITEM, Foosh.identifier(name), item);
-    }
-
-    public static void init() {
-        // NO-OP
     }
 }

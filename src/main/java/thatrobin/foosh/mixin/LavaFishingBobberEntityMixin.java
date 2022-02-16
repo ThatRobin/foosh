@@ -27,16 +27,15 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import thatrobin.foosh.item.AFishingRodItem;
-import thatrobin.foosh.registry.FooshParticles;
 
 @Mixin(FishingBobberEntity.class)
-public abstract class FishingBobberEntityMixin extends Entity {
+public abstract class LavaFishingBobberEntityMixin extends Entity {
 
     @Shadow public abstract PlayerEntity getPlayerOwner();
 
     @Shadow public abstract void remove(Entity.RemovalReason reason);
 
-    private FishingBobberEntityMixin(EntityType<?> type, World world) {
+    private LavaFishingBobberEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
@@ -49,6 +48,7 @@ public abstract class FishingBobberEntityMixin extends Entity {
     private float bobberInLava(float f) {
         BlockPos blockPos = this.getBlockPos();
         FluidState fluidState = this.world.getFluidState(blockPos);
+        BlockState blockState = this.world.getBlockState(blockPos);
 
         if (fluidState.isIn(FluidTags.LAVA)) {
             // Fishing rod doesn't set active hand, and can be used in either, so we check both
@@ -72,7 +72,7 @@ public abstract class FishingBobberEntityMixin extends Entity {
                 }
             }
 
-            if (canFishInLava) {
+            if (canFishInLava && world.getRegistryKey() == World.NETHER) {
                 f = fluidState.getHeight(this.world, blockPos);
             } else {
                 if(!getPlayerOwner().isCreative()) {
@@ -86,9 +86,20 @@ public abstract class FishingBobberEntityMixin extends Entity {
                 getPlayerOwner().playSound(SoundEvents.ENTITY_GENERIC_BURN, .5f, 1f);
                 remove(RemovalReason.KILLED);
             }
+        } else if (isInAir(blockState)) {
+            if(world.getRegistryKey() == World.END) {
+                f = 1.0f;
+            }
+            else {
+                f = 0.0f;
+            }
         }
 
         return f;
+    }
+
+    public boolean isInAir(BlockState blockState) {
+        return blockState.getBlock() == Blocks.AIR || blockState.getBlock() == Blocks.CAVE_AIR || blockState.getBlock() == Blocks.VOID_AIR;
     }
 
     // Original check is used to determine whether the bobber should free-fall.
@@ -99,6 +110,12 @@ public abstract class FishingBobberEntityMixin extends Entity {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;isIn(Lnet/minecraft/tag/Tag;)Z", ordinal = 1)
     )
     private boolean fallOutsideLiquid(FluidState fluid, Tag<Fluid> tag) {
+        if(this.getPlayerOwner().getOffHandStack().getItem() instanceof AFishingRodItem item) {
+            return item.canFishInLava() && !fluid.isEmpty();
+        }
+        if(this.getPlayerOwner().getOffHandStack().getItem() instanceof AFishingRodItem item) {
+            return item.canFishInAir();
+        }
         return !fluid.isEmpty();
     }
 
@@ -108,7 +125,7 @@ public abstract class FishingBobberEntityMixin extends Entity {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void fishingParticleReplacement(BlockPos pos, CallbackInfo ci, ServerWorld serverWorld, int i, float n, float o, float p, double q, double r, double s, BlockState blockState) {
-        if (blockState.isOf(Blocks.LAVA)) {
+        if (blockState.isOf(Blocks.LAVA) && world.getRegistryKey() == World.NETHER) {
             if (this.random.nextFloat() < 0.15F) {
                 serverWorld.spawnParticles(ParticleTypes.LAVA, q, r - 0.10000000149011612D, s, 1, o, 0.1D, p, 0.0D);
             }
@@ -116,7 +133,7 @@ public abstract class FishingBobberEntityMixin extends Entity {
             float k = o * 0.04F;
             float l = p * 0.04F;
             serverWorld.spawnParticles(ParticleTypes.SMOKE, q, r, s, 0, l, 0.01D, -k, 1.0D);
-            serverWorld.spawnParticles(ParticleTypes.LAVA, q, r, s, 0, -l, 0.01D, k, 1.0D);
+            serverWorld.spawnParticles(ParticleTypes.SMOKE, q, r, s, 0, -l, 0.01D, k, 1.0D);
         }
     }
 
@@ -126,7 +143,7 @@ public abstract class FishingBobberEntityMixin extends Entity {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void splashParticleReplacement(BlockPos pos, CallbackInfo ci, ServerWorld serverWorld, int i, float n, float o, float p, double q, double r, double s, BlockState blockState2) {
-        if (blockState2.isOf(Blocks.LAVA)) {
+        if (blockState2.isOf(Blocks.LAVA) && world.getRegistryKey() == World.NETHER) {
             serverWorld.spawnParticles(ParticleTypes.SMOKE, q, r, s, 2 + this.random.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D);
         }
     }

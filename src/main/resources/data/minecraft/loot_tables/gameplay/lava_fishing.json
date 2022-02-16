@@ -8,24 +8,24 @@
         {
           "type": "minecraft:item",
           "weight": 60,
-          "name": "minecraft:blaze_rod"
+          "name": "foosh:goldfish"
         },
         {
           "type": "minecraft:item",
           "weight": 25,
-          "name": "minecraft:nether_star"
+          "name": "foosh:obsidifish"
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
-          "name": "minecraft:gunpowder"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 13,
-          "name": "minecraft:dirt"
+          "weight": 15,
+          "name": "foosh:pyroyster"
         }
       ]
+    }
+  ],
+  "functions": [
+    {
+      "function": "foosh:set_quality"
     }
   ]
 }

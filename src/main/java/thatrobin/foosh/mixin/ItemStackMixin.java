@@ -4,6 +4,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import thatrobin.foosh.Foosh;
 
 import java.util.List;
 
@@ -60,4 +62,60 @@ public class ItemStackMixin {
         }
     }
 
+    @Inject(method = "areNbtEqual", at = @At("RETURN"), cancellable = true)
+    private static void areNbtEqual(ItemStack left, ItemStack right, CallbackInfoReturnable<Boolean> cir) {
+        if(!cir.getReturnValue()) {
+            if(left.hasNbt() && right.hasNbt()) {
+                NbtCompound leftNbt = left.getNbt();
+                NbtCompound rightNbt = right.getNbt();
+                if (leftNbt.getString("quality") == rightNbt.getString("quality")) {
+                    NbtList leftNbtList = leftNbt.getList("lengths", 5);
+                    NbtList rightNbtList = rightNbt.getList("lengths", 5);
+                    NbtList mergedList = leftNbtList;
+                    mergedList.addAll(rightNbtList.stream().toList());
+                    NbtCompound merged = leftNbt;
+                    merged.remove("lengths");
+                    merged.put("lengths", mergedList);
+
+                    left.setNbt(merged);
+                    right.setNbt(merged);
+                    cir.setReturnValue(true);
+                }
+            }
+        }
+        return;
+    }
+
+    @Inject(method = "split", at = @At("RETURN"), cancellable = true)
+    private void split(int amount, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack itemStack = cir.getReturnValue();
+        ItemStack thisItemStack = ((ItemStack)(Object)this);
+        if(!itemStack.isEmpty() && !thisItemStack.isEmpty()) {
+            if(itemStack.hasNbt() && thisItemStack.hasNbt()) {
+                NbtCompound leftNbt = thisItemStack.getNbt();
+                NbtCompound rightNbt = itemStack.getNbt();
+                if (leftNbt.contains("lengths")) {
+                    NbtList nbtList = leftNbt.getList("lengths", 5);
+                    NbtList leftNbtList = new NbtList();
+                    NbtList rightNbtList = new NbtList();
+
+                    List<NbtElement> leftList = nbtList.subList(0, thisItemStack.getCount());
+
+                    List<NbtElement> rightList = nbtList.subList(thisItemStack.getCount(), nbtList.size());
+
+
+                    leftNbtList.addAll(leftList);
+                    rightNbtList.addAll(rightList);
+                    leftNbt.remove("lengths");
+                    leftNbt.put("lengths", leftNbtList);
+                    rightNbt.remove("lengths");
+                    rightNbt.put("lengths", rightNbtList);
+                    thisItemStack.setNbt(leftNbt);
+                    itemStack.setNbt(rightNbt);
+                    cir.setReturnValue(itemStack);
+                }
+            }
+        }
+        return;
+    }
 }

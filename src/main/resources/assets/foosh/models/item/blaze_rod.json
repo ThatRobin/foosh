@@ -1,14 +1,14 @@
 {
-  "parent": "item/handheld_rod",
-  "textures": {
-    "layer0": "item/fishing_rod"
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "cast": 1
-      },
-      "model": "foosh:item/blaze_rod_cast"
-    }
-  ]
+    "parent": "item/handheld_rod",
+    "textures": {
+        "layer0": "foosh:item/blaze_rod"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "cast": 1
+        },
+        "model": "foosh:item/blaze_rod_cast"
+        }
+    ]
 }

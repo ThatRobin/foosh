@@ -16,7 +16,9 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -33,63 +35,18 @@ import java.util.List;
 @Mixin(FishingBobberEntity.class)
 public abstract class FishingBobberLootMixin extends Entity {
 
+    @Shadow @Nullable public abstract PlayerEntity getPlayerOwner();
+
     public FishingBobberLootMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
     @Redirect(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/loot/LootManager;getTable(Lnet/minecraft/util/Identifier;)Lnet/minecraft/loot/LootTable;"))
     private LootTable generateLoot(LootManager instance, Identifier id) throws Exception {
-        if(world.getServer() != null) {
-            if(world.getRegistryKey() == World.NETHER) {
-                return instance.getTable(FooshLootTables.LAVA_FISHING);
-            }
-            return instance.getTable(LootTables.FISHING_GAMEPLAY);
+        if(world.getRegistryKey() == World.NETHER) {
+            return instance.getTable(FooshLootTables.LAVA_FISHING);
         }
-        throw new Exception("Server is null");
-    }
-    @Redirect(
-            method = "use",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/loot/LootTable;generateLoot(Lnet/minecraft/loot/context/LootContext;)Ljava/util/List;"))
-    private List<ItemStack> generateLoot(LootTable instance, LootContext context) {
-        List<ItemStack> list = instance.generateLoot(context);
-
-        for (ItemStack itemStack : list) {
-            if(itemStack.isIn(ItemTags.FISHES)) {
-                Float minLength = 1.0f;
-                Float maxLength = 100.0f;
-                if (FishRegistry.contains(itemStack)) {
-                    Identifier item = FishRegistry.getId(itemStack);
-                    minLength = FishRegistry.getMinLength(item);
-                    maxLength = FishRegistry.getMaxLength(item);
-                }
-                float num = getRandomFloat(minLength, maxLength);
-                DecimalFormat df = new DecimalFormat("##.##");
-                num = Float.parseFloat(df.format(num));
-
-                NbtFloat nbtFloat = NbtFloat.of(num);
-
-                NbtList nbtList = new NbtList();
-                nbtList.add(nbtFloat);
-                NbtCompound compound = new NbtCompound();
-                compound.put("lengths", nbtList);
-                String qualityStr;
-                String[] qualities = new String[]{"common", "uncommon", "rare", "legendary"};
-                int quality = getRandomInt(0, 3);
-                qualityStr = qualities[quality];
-                compound.putString("quality", qualityStr);
-                itemStack.setNbt(compound);
-            }
-        }
-
-        return list;
-    }
-
-    public float getRandomFloat(float min, float max) {
-        return (float) ((Math.random() * (max - min)) + min);
-    }
-
-    public int getRandomInt(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+        return instance.getTable(LootTables.FISHING_GAMEPLAY);
     }
 
     @Inject(

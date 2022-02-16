@@ -16,22 +16,24 @@ public class FooshClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        registerFishingRodPredicates(FooshItems.BLAZE_ROD);
+        registerFishingRodPredicates(FooshItems.BLAZE_ROD, FooshItems.REDSTONE_ROD, FooshItems.PRISMARINE_ROD, FooshItems.END_ROD, FooshItems.BONE_ROD, FooshItems.BAMBOO_ROD);
     }
 
-    public void registerFishingRodPredicates(Item item) {
-        FabricModelPredicateProviderRegistry.register(item, new Identifier("cast"), (itemStack, clientWorld, livingEntity, i) -> {
-            if (livingEntity == null) {
-                return 0.0F;
-            } else {
-                boolean bl = livingEntity.getMainHandStack() == itemStack;
-                boolean bl2 = livingEntity.getOffHandStack() == itemStack;
-                if (livingEntity.getMainHandStack().getItem() instanceof FishingRodItem) {
-                    bl2 = false;
-                }
+    public void registerFishingRodPredicates(Item... item) {
+        for (int i = 0; i < item.length; i++) {
+            FabricModelPredicateProviderRegistry.register(item[i], new Identifier("cast"), (itemStack, clientWorld, livingEntity, e) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    boolean bl = livingEntity.getMainHandStack() == itemStack;
+                    boolean bl2 = livingEntity.getOffHandStack() == itemStack;
+                    if (livingEntity.getMainHandStack().getItem() instanceof FishingRodItem) {
+                        bl2 = false;
+                    }
 
-                return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
-            }
-        });
+                    return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
+                }
+            });
+        }
     }
 }

@@ -3,8 +3,12 @@
   "package": "thatrobin.foosh.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AirFishingBobberEntityMixin",
+    "WorldMixin",
+    "FishingBobberRedstoneMixin",
+    "FishingBobberShulkerMixin",
     "FishingBobberEntityAccessor",
-    "FishingBobberEntityMixin",
+    "LavaFishingBobberEntityMixin",
     "FishingBobberEntityRendererMixin",
     "FishingBobberFireproofMixin",
     "FishingBobberLootMixin",
@@ -13,7 +17,8 @@
     "ItemEntityFireproofMixin",
     "ItemRendererMixin",
     "ItemStackMixin",
-    "ParticleManagerMixin"
+    "ItemMixin",
+    "ItemFrameEntityMixin"
   ],
   "client": [],
   "injectors": {
