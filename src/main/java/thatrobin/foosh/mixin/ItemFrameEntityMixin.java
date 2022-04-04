@@ -1,7 +1,9 @@
 package thatrobin.foosh.mixin;
 
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -29,7 +31,7 @@ public class ItemFrameEntityMixin {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void setLengthsToOne(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    private void interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         ItemStack itemStack = player.getStackInHand(hand);
         if(itemStack.isIn(ItemTags.FISHES)) {
             cir.setReturnValue(ActionResult.FAIL);

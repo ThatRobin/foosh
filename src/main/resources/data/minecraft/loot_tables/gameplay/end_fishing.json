@@ -8,17 +8,12 @@
         {
           "type": "minecraft:item",
           "weight": 60,
-          "name": "foosh:goldfish"
+          "name": "foosh:coris"
         },
         {
           "type": "minecraft:item",
           "weight": 25,
-          "name": "foosh:obsidifish"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 15,
-          "name": "foosh:pyroyster"
+          "name": "foosh:end_snapper"
         }
       ]
     }

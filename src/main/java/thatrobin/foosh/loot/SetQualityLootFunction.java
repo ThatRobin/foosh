@@ -42,7 +42,7 @@ public class SetQualityLootFunction extends ConditionalLootFunction {
     }
 
     public int getRandomInt(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+        return (int)Math.round((Math.random() * (max - min)) + min);
     }
 
     public static Builder<?> builder() {

@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.registry.Registry;
+import thatrobin.foosh.item.FishingBag;
 
 public class FooshItems {
 
@@ -18,11 +19,14 @@ public class FooshItems {
     public static Item PRISMARINE_ROD = new AFishingRodItem.Builder().withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
     public static Item REDSTONE_ROD = new AFishingRodItem.Builder().redstone(true).withSettings(new FabricItemSettings().group(Foosh.FOOSH_ITEMS)).build();
 
-    public static Item OBSIDIFISH = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
-    public static Item PYROYSTER = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
-    public static Item GOLDFISH = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
-    public static Item LAPLAICE = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
-    public static Item END_SNAPPER = new Item(new FabricItemSettings().fireproof().group(Foosh.FOOSH_ITEMS));
+    public static Item FISHING_BAG = new FishingBag(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+
+    public static Item OBSIDIFISH = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+    public static Item PYROYSTER = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+    public static Item GOLDFISH = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+    public static Item LAPLAICE = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+    public static Item END_SNAPPER = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
+    public static Item CORIS = new Item(new FabricItemSettings().group(Foosh.FOOSH_ITEMS));
 
     public static void register() {
         register("bamboo_rod", BAMBOO_ROD);
@@ -37,6 +41,10 @@ public class FooshItems {
         register("goldfish", GOLDFISH);
         register("laplaice", LAPLAICE);
         register("end_snapper", END_SNAPPER);
+        register("coris", CORIS);
+
+
+        register("fishing_bag", FISHING_BAG);
     }
 
     public static Item register(String name, Item item) {

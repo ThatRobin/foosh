@@ -46,6 +46,9 @@ public abstract class FishingBobberLootMixin extends Entity {
         if(world.getRegistryKey() == World.NETHER) {
             return instance.getTable(FooshLootTables.LAVA_FISHING);
         }
+        if(world.getRegistryKey() == World.END) {
+            return instance.getTable(FooshLootTables.END_FISHING);
+        }
         return instance.getTable(LootTables.FISHING_GAMEPLAY);
     }
 

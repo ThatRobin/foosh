@@ -35,15 +35,9 @@ public class ItemStackMixin {
         if (item.getNbt() != null) {
 
             if (!item.getNbt().isEmpty()) {
-                NbtList lengths = item.getNbt().getList("lengths", 5);
-                if (lengths != null && !lengths.isEmpty()) {
-                    if (lengths.size() == 1) {
-                        String length = lengths.get(0).toString();
-                        length = StringUtils.substring(length, 0, length.length() - 1);
-                        list.add(new LiteralText("Length: " + length + "cm").formatted(Formatting.GRAY));
-                    } else {
-                        list.add(new LiteralText("Multiple Fish").formatted(Formatting.GRAY));
-                    }
+                Float length = item.getNbt().getFloat("length");
+                if (length != null) {
+                    list.add(new LiteralText("Length: " + length + "cm").formatted(Formatting.GRAY));
                 }
                 String quality = item.getNbt().getString("quality");
                 if (quality != null && !quality.isEmpty()) {
@@ -62,60 +56,4 @@ public class ItemStackMixin {
         }
     }
 
-    @Inject(method = "areNbtEqual", at = @At("RETURN"), cancellable = true)
-    private static void areNbtEqual(ItemStack left, ItemStack right, CallbackInfoReturnable<Boolean> cir) {
-        if(!cir.getReturnValue()) {
-            if(left.hasNbt() && right.hasNbt()) {
-                NbtCompound leftNbt = left.getNbt();
-                NbtCompound rightNbt = right.getNbt();
-                if (leftNbt.getString("quality") == rightNbt.getString("quality")) {
-                    NbtList leftNbtList = leftNbt.getList("lengths", 5);
-                    NbtList rightNbtList = rightNbt.getList("lengths", 5);
-                    NbtList mergedList = leftNbtList;
-                    mergedList.addAll(rightNbtList.stream().toList());
-                    NbtCompound merged = leftNbt;
-                    merged.remove("lengths");
-                    merged.put("lengths", mergedList);
-
-                    left.setNbt(merged);
-                    right.setNbt(merged);
-                    cir.setReturnValue(true);
-                }
-            }
-        }
-        return;
-    }
-
-    @Inject(method = "split", at = @At("RETURN"), cancellable = true)
-    private void split(int amount, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack itemStack = cir.getReturnValue();
-        ItemStack thisItemStack = ((ItemStack)(Object)this);
-        if(!itemStack.isEmpty() && !thisItemStack.isEmpty()) {
-            if(itemStack.hasNbt() && thisItemStack.hasNbt()) {
-                NbtCompound leftNbt = thisItemStack.getNbt();
-                NbtCompound rightNbt = itemStack.getNbt();
-                if (leftNbt.contains("lengths")) {
-                    NbtList nbtList = leftNbt.getList("lengths", 5);
-                    NbtList leftNbtList = new NbtList();
-                    NbtList rightNbtList = new NbtList();
-
-                    List<NbtElement> leftList = nbtList.subList(0, thisItemStack.getCount());
-
-                    List<NbtElement> rightList = nbtList.subList(thisItemStack.getCount(), nbtList.size());
-
-
-                    leftNbtList.addAll(leftList);
-                    rightNbtList.addAll(rightList);
-                    leftNbt.remove("lengths");
-                    leftNbt.put("lengths", leftNbtList);
-                    rightNbt.remove("lengths");
-                    rightNbt.put("lengths", rightNbtList);
-                    thisItemStack.setNbt(leftNbt);
-                    itemStack.setNbt(rightNbt);
-                    cir.setReturnValue(itemStack);
-                }
-            }
-        }
-        return;
-    }
 }

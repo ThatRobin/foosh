@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
@@ -45,16 +46,42 @@ public abstract class FishingBobberRedstoneMixin extends ProjectileEntity implem
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     public void tick(CallbackInfo ci) {
-        if(isRedstone()) {
-            Block block = world.getBlockState(getBlockPos()).getBlock();
-            world.updateNeighbors(getBlockPos(), block);
+        if(isOnGround()) {
+            if (isRedstone()) {
+                Block block = world.getBlockState(getBlockPos()).getBlock();
+                world.getBlockState(getBlockPos()).getStateForNeighborUpdate(Direction.UP, getBlockStateAtPos(), world, getBlockPos(), getBlockPos());
+                world.updateNeighbors(getBlockPos(), block);
+            }
         }
     }
 
     @Inject(method = "use", at = @At(value = "RETURN"))
-    public void tick(ItemStack usedItem, CallbackInfoReturnable<Integer> cir) {
+    public void use(ItemStack usedItem, CallbackInfoReturnable<Integer> cir) {
+        if(isOnGround()) {
+            if (isRedstone()) {
+                Block block = world.getBlockState(getBlockPos()).getBlock();
+                world.getBlockState(getBlockPos()).getStateForNeighborUpdate(Direction.UP, getBlockStateAtPos(), world, getBlockPos(), getBlockPos());
+                world.updateNeighbors(getBlockPos(), block);
+            }
+        }
+    }
+
+    @Inject(method = "removeIfInvalid", at = @At("RETURN"))
+    public void removeIfInvaid(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if(cir.getReturnValue()) {
+            if(isRedstone()) {
+                Block block = world.getBlockState(getBlockPos()).getBlock();
+                world.getBlockState(getBlockPos()).getStateForNeighborUpdate(Direction.UP, getBlockStateAtPos(), world, getBlockPos(), getBlockPos());
+                world.updateNeighbors(getBlockPos(), block);
+            }
+        }
+    }
+
+    @Inject(method = "onRemoved", at = @At("HEAD"))
+    public void onRemoved(CallbackInfo ci) {
         if(isRedstone()) {
             Block block = world.getBlockState(getBlockPos()).getBlock();
+            world.getBlockState(getBlockPos()).getStateForNeighborUpdate(Direction.UP, getBlockStateAtPos(), world, getBlockPos(), getBlockPos());
             world.updateNeighbors(getBlockPos(), block);
         }
     }

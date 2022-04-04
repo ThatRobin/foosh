@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AirFishingBobberEntityMixin",
-    "WorldMixin",
+    "BlockMixin",
     "FishingBobberRedstoneMixin",
     "FishingBobberShulkerMixin",
     "FishingBobberEntityAccessor",
@@ -17,10 +17,10 @@
     "ItemEntityFireproofMixin",
     "ItemRendererMixin",
     "ItemStackMixin",
-    "ItemMixin",
     "ItemFrameEntityMixin"
   ],
-  "client": [],
+  "client": [
+  ],
   "injectors": {
     "defaultRequire": 1
   }

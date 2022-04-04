@@ -41,12 +41,8 @@ public class SetLengthLootFunction extends ConditionalLootFunction {
         DecimalFormat df = new DecimalFormat("##.##");
         num = Float.parseFloat(df.format(num));
 
-        NbtFloat nbtFloat = NbtFloat.of(num);
-
-        NbtList nbtList = new NbtList();
-        nbtList.add(nbtFloat);
         NbtCompound compound = itemStack.getOrCreateNbt();
-        compound.put("lengths", nbtList);
+        compound.putFloat("length", num);
 
         itemStack.setNbt(compound);
         return itemStack;

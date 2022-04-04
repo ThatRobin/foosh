@@ -46,7 +46,7 @@ public class Foosh implements ModInitializer {
     public static final LootFunctionType SET_QUALITY = register("set_quality", new SetQualityLootFunction.Serializer());
 
     private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
-        return (LootFunctionType) Registry.register(Registry.LOOT_FUNCTION_TYPE, identifier(id), new LootFunctionType(jsonSerializer));
+        return Registry.register(Registry.LOOT_FUNCTION_TYPE, identifier(id), new LootFunctionType(jsonSerializer));
     }
 
     @Override
@@ -63,9 +63,16 @@ public class Foosh implements ModInitializer {
         FishRegistry.register(identifier("pyroyster"), FooshItems.PYROYSTER, 21f, 58f);
         FishRegistry.register(identifier("laplaice"), FooshItems.LAPLAICE, 21f, 58f);
         FishRegistry.register(identifier("end_snapper"), FooshItems.END_SNAPPER, 21f, 58f);
+        FishRegistry.register(identifier("coris"), FooshItems.CORIS, 21f, 58f);
 
         LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, table, setter) -> {
             if (LootTables.FISHING_FISH_GAMEPLAY.equals(id)) {
+                table.withFunction(SetQualityLootFunction.builder().build()).withFunction(SetLengthLootFunction.builder().build());
+            }
+            if (FooshLootTables.LAVA_FISHING.equals(id)) {
+                table.withFunction(SetQualityLootFunction.builder().build()).withFunction(SetLengthLootFunction.builder().build());
+            }
+            if (FooshLootTables.END_FISHING.equals(id)) {
                 table.withFunction(SetQualityLootFunction.builder().build()).withFunction(SetLengthLootFunction.builder().build());
             }
         });
