@@ -14,37 +14,36 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import thatrobin.foosh.Foosh;
+import thatrobin.foosh.config.ModConfigs;
 import thatrobin.foosh.registry.FishRegistry;
 
 import java.text.DecimalFormat;
 
 public class SetLengthLootFunction extends ConditionalLootFunction {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     SetLengthLootFunction(LootCondition[] lootConditions) {
         super(lootConditions);
     }
 
     public LootFunctionType getType() {
-        return Foosh.SET_QUALITY;
+        return Foosh.SET_LENGTH;
     }
 
     public ItemStack process(ItemStack itemStack, LootContext context) {
-        Float minLength = 1.0f;
-        Float maxLength = 100.0f;
         if (FishRegistry.contains(itemStack)) {
             Identifier item = FishRegistry.getId(itemStack);
-            minLength = FishRegistry.getMinLength(item);
-            maxLength = FishRegistry.getMaxLength(item);
+            float minLength = FishRegistry.getMinLength(item);
+            float maxLength = FishRegistry.getMaxLength(item);
+
+            float num = getRandomFloat(minLength, maxLength);
+            DecimalFormat df = new DecimalFormat("##.##");
+            num = Float.parseFloat(df.format(num));
+
+            NbtCompound compound = itemStack.getOrCreateNbt();
+            compound.putFloat("length", num);
+
+            itemStack.setNbt(compound);
         }
-        float num = getRandomFloat(minLength, maxLength);
-        DecimalFormat df = new DecimalFormat("##.##");
-        num = Float.parseFloat(df.format(num));
-
-        NbtCompound compound = itemStack.getOrCreateNbt();
-        compound.putFloat("length", num);
-
-        itemStack.setNbt(compound);
         return itemStack;
     }
 

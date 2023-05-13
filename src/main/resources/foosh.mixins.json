@@ -1,27 +1,24 @@
 {
-  "required": true,
-  "package": "thatrobin.foosh.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "AirFishingBobberEntityMixin",
-    "BlockMixin",
-    "FishingBobberRedstoneMixin",
-    "FishingBobberShulkerMixin",
-    "FishingBobberEntityAccessor",
-    "LavaFishingBobberEntityMixin",
-    "FishingBobberEntityRendererMixin",
-    "FishingBobberFireproofMixin",
-    "FishingBobberLootMixin",
-    "FishingBobberValidityMixin",
-    "FishingRodPropertyMixin",
-    "ItemEntityFireproofMixin",
-    "ItemRendererMixin",
-    "ItemStackMixin",
-    "ItemFrameEntityMixin"
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
+    "required": true,
+    "package": "thatrobin.foosh.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "BlockMixin",
+        "BrewingStandBlockEntityMixin",
+        "BrewingStandScreenHandlerMixin",
+        "EnchantmentScreenHandlerMixin",
+        "EnchantmentScreenHandlerSlotMixin",
+        "FishingBobberEntityMixin",
+        "ItemEntityFireproofMixin",
+        "ItemMixin",
+        "ItemRendererMixin",
+        "ItemStackMixin",
+        "PiglinBrainMixin",
+        "ScreenHandlerMixin"
+    ],
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
   }
 }

@@ -1,8 +1,8 @@
 package thatrobin.foosh.item;
 
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import thatrobin.foosh.api.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -11,22 +11,21 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import thatrobin.foosh.entity.bobbers.AirBobberEntity;
+import thatrobin.foosh.entity.bobbers.LavaBobberEntity;
+import thatrobin.foosh.entity.bobbers.RedstoneBobberEntity;
 
 public class AFishingRodItem extends FishingRodItem implements Vanishable {
 
-    private final SoundInstance retrieve;
-    private final SoundInstance cast;
+    private final SoundEvent retrieve;
+    private final SoundEvent cast;
     private final int baseLure;
     private final int baseLOTS;
     private final boolean lavaProof;
     private final boolean redstone;
     private final boolean shulk;
 
-    public AFishingRodItem(Settings settings, SoundInstance retrieve, SoundInstance cast, int baseLure, int baseLOTS, boolean lavaProof, boolean redstone, boolean shulk) {
+    public AFishingRodItem(Settings settings, SoundEvent retrieve, SoundEvent cast, int baseLure, int baseLOTS, boolean lavaProof, boolean redstone, boolean shulk) {
         super(settings);
         this.retrieve = retrieve;
         this.cast = cast;
@@ -40,7 +39,6 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack heldStack = user.getStackInHand(hand);
-        Random random = world.random;
 
         if (user.fishHook != null) {
             if (!world.isClient) {
@@ -48,41 +46,28 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
                 heldStack.damage(damage, user, player -> player.sendToolBreakStatus(hand));
             }
 
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), retrieve.getSound(), SoundCategory.NEUTRAL, retrieve.getVolume(random), retrieve.getPitch(random));
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), retrieve, SoundCategory.NEUTRAL, 1.0F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         } else {
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), cast.getSound(), SoundCategory.NEUTRAL, cast.getVolume(random), cast.getPitch(random));
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), cast, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
 
-            // Summon new fishing bobber
             if (!world.isClient) {
-                int bonusLure = 0;
-                int bonusLuck = 0;
+                int lure = EnchantmentHelper.getLure(heldStack) + baseLure;
+                int lots = EnchantmentHelper.getLuckOfTheSea(heldStack) + baseLOTS;
 
-                // Find buffing items in player inventory
-                List<FishingBonus> found = new ArrayList<>();
-                for (ItemStack stack : user.getInventory().main) {
-                    Item item = stack.getItem();
-
-                    if (item instanceof FishingBonus bonus) {
-                        if (!found.contains(bonus)) {
-                            if(bonus.shouldApply(world, user)) {
-                                found.add(bonus);
-                                bonusLure += bonus.getLure();
-                                bonusLuck += bonus.getLuckOfTheSea();
-                            }
-                        }
-                    }
+                if (lavaProof) {
+                    LavaBobberEntity bobber = new LavaBobberEntity(user, world, lots, lure);
+                    world.spawnEntity(bobber);
+                } else if (redstone) {
+                    RedstoneBobberEntity bobber = new RedstoneBobberEntity(user, world, lots, lure);
+                    world.spawnEntity(bobber);
+                } else if (shulk) {
+                    AirBobberEntity bobber = new AirBobberEntity(user, world, lots, lure);
+                    world.spawnEntity(bobber);
+                } else {
+                    FishingBobberEntity bobber = new FishingBobberEntity(user, world, lots, lure);
+                    world.spawnEntity(bobber);
                 }
 
-                // Calculate lure and luck
-                int lure = EnchantmentHelper.getLure(heldStack) + baseLure + bonusLuck + bonusLure;
-                int lots = EnchantmentHelper.getLuckOfTheSea(heldStack) + baseLOTS + bonusLuck + bonusLuck;
-
-                // Summon bobber with stats
-                FishingBobberEntity bobber = new FishingBobberEntity(user, world, lots, lure);
-                world.spawnEntity(bobber);
-                ((FireproofEntity) bobber).setFireproof(lavaProof);
-                ((RedstoneEntity) bobber).setRedstone(redstone);
-                ((ShulkEntity) bobber).setShulk(shulk);
             }
 
             user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -100,15 +85,20 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
         return lavaProof;
     }
 
-    public boolean canFishInAir() {
+    public boolean isRedstoneActivating() {
         return redstone;
     }
 
+    public boolean canFishInAir() {
+        return shulk;
+    }
+
+    @SuppressWarnings("all")
     public static class Builder {
 
         private Item.Settings settings = new Item.Settings().group(ItemGroup.TOOLS).maxDamage(100);
-        private SoundInstance retrieve = new SoundInstance(SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, 1.0F, SoundInstance.DEFAULT_PITCH);
-        private SoundInstance cast = new SoundInstance(SoundEvents.ENTITY_FISHING_BOBBER_THROW, 0.5F, SoundInstance.DEFAULT_PITCH);
+        private SoundEvent retrieve = SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE;
+        private SoundEvent cast = SoundEvents.ENTITY_FISHING_BOBBER_THROW;
         private int baseLure = 0;
         private int baseLOTS = 0;
         private boolean lavaProof = false;
@@ -129,12 +119,12 @@ public class AFishingRodItem extends FishingRodItem implements Vanishable {
             return this;
         }
 
-        public Builder withRetrieveSound(SoundInstance sound) {
+        public Builder withRetrieveSound(SoundEvent sound) {
             this.retrieve = sound;
             return this;
         }
 
-        public Builder withCastSound(SoundInstance sound) {
+        public Builder withCastSound(SoundEvent sound) {
             this.cast = sound;
             return this;
         }

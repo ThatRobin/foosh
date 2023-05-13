@@ -1,0 +1,7 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "foosh:item/glassfish_potion_overlay",
+        "layer1": "foosh:item/glassfish_potion"
+    }
+}

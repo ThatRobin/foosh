@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import thatrobin.foosh.api.RedstoneEntity;
+import thatrobin.foosh.entity.bobbers.RedstoneBobberEntity;
 
 import java.util.List;
 
@@ -24,14 +24,15 @@ import java.util.List;
 public class BlockMixin {
 
     @Inject(method = "getWeakRedstonePower", at = @At("RETURN"), cancellable = true)
+    @SuppressWarnings("all")
     public void getRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction, CallbackInfoReturnable<Integer> cir) {
-        TypeFilter test = TypeFilter.instanceOf(FishingBobberEntity.class);
+        TypeFilter test = TypeFilter.instanceOf(RedstoneBobberEntity.class);
         List<Entity> entities = Lists.newArrayList();
         Direction[] directions = {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
         entities.addAll(((World)world).getEntitiesByType(test, Box.from(new BlockBox(pos)), (entity) -> {
-            if(entity instanceof FishingBobberEntity bobber) {
-                return ((RedstoneEntity)bobber).isRedstone();
+            if(entity instanceof RedstoneBobberEntity bobber) {
+                return true;
             }
             return false;
         }));
@@ -40,8 +41,8 @@ public class BlockMixin {
                 BlockPos tempPos = pos.offset(dir);
                 BlockBox blockBox = new BlockBox(tempPos);
                 entities.addAll(((World) world).getEntitiesByType(test, Box.from(blockBox), (entity) -> {
-                    if (entity instanceof FishingBobberEntity bobber) {
-                        return ((RedstoneEntity) bobber).isRedstone();
+                    if (entity instanceof RedstoneBobberEntity bobber) {
+                        return true;
                     }
                     return false;
                 }));

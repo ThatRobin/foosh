@@ -1,5 +1,8 @@
 {
     "itemGroup.foosh.foosh_items": "Foosh",
+    "catagory.foosh": "Foosh Keybinds",
+    "key.foosh.toggle_auto_measure": "Toggle Auto-Measurement",
+
     "item.foosh.bamboo_rod": "Bamboo Rod",
     "item.foosh.blaze_rod": "Blaze Rod",
     "item.foosh.bone_rod": "Bone Rod",
@@ -9,8 +12,45 @@
 
     "item.foosh.goldfish": "Gold Fish",
     "item.foosh.pyroyster": "Pyroyster",
-    "item.foosh.obsidifish": "Obsturgeon",
+    "item.foosh.obsturgeon": "Obsturgeon",
     "item.foosh.end_snapper": "End Snapper",
-    "item.foosh.laplaice": "Laplaice"
+    "item.foosh.laplaice": "Laplaice",
+    "item.foosh.coris": "Coris",
+    "item.foosh.glassfish": "Glassfish",
+    "item.foosh.glassfish_potion.effect.empty": "Uncraftable Glassfish",
+    "item.foosh.glassfish_potion.effect.water": "Water Glassfish",
+    "item.foosh.glassfish_potion.effect.mundane": "Mundane Glassfish",
+    "item.foosh.glassfish_potion.effect.thick": "Thick Glassfish",
+    "item.foosh.glassfish_potion.effect.awkward": "Awkward Glassfish",
+    "item.foosh.glassfish_potion.effect.night_vision": "Glassfish of Night Vision",
+    "item.foosh.glassfish_potion.effect.invisibility": "Glassfish of Invisibility",
+    "item.foosh.glassfish_potion.effect.leaping": "Glassfish of Leaping",
+    "item.foosh.glassfish_potion.effect.fire_resistance": "Glassfish of Fire Resistance",
+    "item.foosh.glassfish_potion.effect.swiftness": "Glassfish of Swiftness",
+    "item.foosh.glassfish_potion.effect.slowness": "Glassfish of Slowness",
+    "item.foosh.glassfish_potion.effect.water_breathing": "Glassfish of Water Breathing",
+    "item.foosh.glassfish_potion.effect.healing": "Glassfish of Healing",
+    "item.foosh.glassfish_potion.effect.harming": "Glassfish of Harming",
+    "item.foosh.glassfish_potion.effect.poison": "Glassfish of Poison",
+    "item.foosh.glassfish_potion.effect.regeneration": "Glassfish of Regeneration",
+    "item.foosh.glassfish_potion.effect.strength": "Glassfish of Strength",
+    "item.foosh.glassfish_potion.effect.weakness": "Glassfish of Weakness",
+    "item.foosh.glassfish_potion.effect.levitation": "Glassfish of Levitation",
+    "item.foosh.glassfish_potion.effect.luck": "Glassfish of Luck",
+    "item.foosh.glassfish_potion.effect.turtle_master": "Glassfish of the Turtle Master",
+    "item.foosh.glassfish_potion.effect.slow_falling": "Glassfish of Slow Falling",
+    "item.foosh.glassfish_potion.effect.fishermens_luck": "Glassfish of Fishermen's Luck",
+
+
+    "item.minecraft.potion.effect.fishermens_luck": "Potion of Fishermen's Luck",
+    "item.minecraft.splash_potion.effect.fishermens_luck": "Splash Potion of Fishermen's Luck",
+    "item.minecraft.lingering_potion.effect.fishermens_luck": "Lingering Potion of Fishermen's Luck",
+
+    "item.foosh.fishing_bag": "Fishing Bag",
+    "item.foosh.fishing_bag_2": "Big Fishing Bag",
+    "item.foosh.fishing_bag_3": "Extreme Fishing Bag",
+
+    "entity.foosh.wandering_angler": "Wandering Angler",
+    "effect.foosh.fishermens_luck": "Fishermen's Luck"
 
 }

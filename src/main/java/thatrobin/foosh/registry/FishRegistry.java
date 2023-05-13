@@ -1,24 +1,22 @@
 package thatrobin.foosh.registry;
 
 import com.google.common.collect.Maps;
-import thatrobin.foosh.client.rendering.ItemOverlayRendererRegistry;
-import thatrobin.foosh.client.rendering.QualityIcon;
+import net.minecraft.util.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.lang3.tuple.Triple;
+import thatrobin.foosh.util.FishSettings;
 
 import java.util.Map;
 
 public class FishRegistry {
 
-    public static Map<Identifier, Triple<Item, Float, Float>> fishData = Maps.newHashMap();
+    public static Map<Identifier, Pair<Item, FishSettings>> fishData = Maps.newHashMap();
 
-    public static void register(Identifier id, Item item, Float minLength, Float maxLength) {
-        ItemOverlayRendererRegistry.setPostRenderer(item, new QualityIcon());
-        Triple<Item, Float, Float> itemLength = Triple.of(item, minLength, maxLength);
-        fishData.put(id, itemLength);
+    public static void register(Identifier id, Item item, FishSettings fishSettings) {
+        Pair<Item, FishSettings> fishPairData = new Pair<>(item, fishSettings);
+        fishData.put(id, fishPairData);
     }
 
     public static Item getItem(Identifier id) {
@@ -26,11 +24,11 @@ public class FishRegistry {
     }
 
     public static Float getMinLength(Identifier id) {
-        return fishData.get(id).getMiddle();
+        return fishData.get(id).getRight().getMinLength();
     }
 
     public static Float getMaxLength(Identifier id) {
-        return fishData.get(id).getRight();
+        return fishData.get(id).getRight().getMaxLength();
     }
 
     public static boolean contains(ItemStack itemStack) {

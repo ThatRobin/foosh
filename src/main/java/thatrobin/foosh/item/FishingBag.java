@@ -17,7 +17,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -44,54 +43,49 @@ public class FishingBag extends BundleItem {
 
     public FishingBag(Settings settings, int max_storage) {
         super(settings);
-        this.max_storage = max_storage;
+        setBundleMax(max_storage);
     }
 
-    public static float getAmountFilled(ItemStack stack) {
-        return (float)getBundleOccupancy(stack) / 64.0F;
-    }
 
     public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
-        if(stack.isIn(ItemTags.FISHES)) {
-            if (clickType != ClickType.RIGHT) {
-                return false;
-            } else {
-                ItemStack itemStack = slot.getStack();
-                if (itemStack.isEmpty()) {
-                    this.playRemoveOneSound(player);
-                    removeFirstStack(stack).ifPresent((removedStack) -> {
-                        addToBundle(stack, slot.insertStack(removedStack));
-                    });
-                } else if (itemStack.getItem().canBeNested()) {
-                    int i = (64 - getBundleOccupancy(stack)) / getItemOccupancy(itemStack);
-                    int j = addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
-                    if (j > 0) {
-                        this.playInsertSound(player);
-                    }
-                }
-
-                return true;
-            }
-        } else {
+        if (clickType != ClickType.RIGHT) {
             return false;
+        } else {
+            ItemStack itemStack = slot.getStack();
+            if (itemStack.isEmpty()) {
+                this.playRemoveOneSound(player);
+                removeFirstStack(stack).ifPresent((removedStack) -> {
+                    addToBundle(stack, slot.insertStack(removedStack));
+                });
+            } else if (itemStack.getItem().canBeNested() && slot.getStack().isIn(ItemTags.FISHES)) {
+                int i = (getBundleMax() - getBundleOccupancy(stack)) / getItemOccupancy(itemStack);
+                int j = addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
+                if (j > 0) {
+                    this.playInsertSound(player);
+                }
+            }
+
+            return true;
         }
     }
 
     public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
         if (clickType == ClickType.RIGHT && slot.canTakePartial(player)) {
+
             if (otherStack.isEmpty()) {
                 removeFirstStack(stack).ifPresent((itemStack) -> {
                     this.playRemoveOneSound(player);
                     cursorStackReference.set(itemStack);
                 });
             } else {
-                int i = addToBundle(stack, otherStack);
-                if (i > 0) {
-                    this.playInsertSound(player);
-                    otherStack.decrement(i);
+                if (otherStack.isIn(ItemTags.FISHES)) {
+                    int i = addToBundle(stack, otherStack);
+                    if (i > 0) {
+                        this.playInsertSound(player);
+                        otherStack.decrement(i);
+                    }
                 }
             }
-
             return true;
         } else {
             return false;
@@ -114,14 +108,14 @@ public class FishingBag extends BundleItem {
     }
 
     public int getItemBarStep(ItemStack stack) {
-        return Math.min(1 + 12 * getBundleOccupancy(stack) / 64, 13);
+        return Math.min(1 + 12 * getBundleOccupancy(stack) / getBundleMax(), 13);
     }
 
     public int getItemBarColor(ItemStack stack) {
         return ITEM_BAR_COLOR;
     }
 
-    private static int addToBundle(ItemStack bundle, ItemStack stack) {
+    public int addToBundle(ItemStack bundle, ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem().canBeNested()) {
             NbtCompound nbtCompound = bundle.getOrCreateNbt();
             if (!nbtCompound.contains("Items")) {
@@ -130,14 +124,14 @@ public class FishingBag extends BundleItem {
 
             int i = getBundleOccupancy(bundle);
             int j = getItemOccupancy(stack);
-            int k = Math.min(stack.getCount(), (64 - i) / j);
+            int k = Math.min(stack.getCount(), (getBundleMax() - i) / j);
             if (k == 0) {
                 return 0;
             } else {
                 NbtList nbtList = nbtCompound.getList("Items", 10);
                 Optional<NbtCompound> optional = canMergeStack(stack, nbtList);
                 if (optional.isPresent()) {
-                    NbtCompound nbtCompound2 = (NbtCompound)optional.get();
+                    NbtCompound nbtCompound2 = (NbtCompound) optional.get();
                     ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
                     itemStack.increment(k);
                     itemStack.writeNbt(nbtCompound2);
@@ -167,27 +161,16 @@ public class FishingBag extends BundleItem {
             var10000 = var10000.filter(NbtCompound.class::isInstance);
             Objects.requireNonNull(NbtCompound.class);
             return var10000.map(NbtCompound.class::cast).filter((item) -> {
-                return ItemStack.canCombine(ItemStack.fromNbt(item), stack);
+                return ItemStack.canCombine(ItemStack.fromNbt(item), stack)  && (ItemStack.fromNbt((NbtCompound) item).getCount() + stack.getCount() <= stack.getMaxCount());
             }).findFirst();
         }
     }
 
-    private static int getItemOccupancy(ItemStack stack) {
-        if (stack.isOf(Items.BUNDLE)) {
-            return 4 + getBundleOccupancy(stack);
-        } else {
-            if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasNbt()) {
-                NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-                if (nbtCompound != null && !nbtCompound.getList("Bees", 10).isEmpty()) {
-                    return 64;
-                }
-            }
-
-            return 64 / stack.getMaxCount();
-        }
+    private int getItemOccupancy(ItemStack stack) {
+        return 1;
     }
 
-    private static int getBundleOccupancy(ItemStack stack) {
+    private int getBundleOccupancy(ItemStack stack) {
         return getBundledStacks(stack).mapToInt((itemStack) -> {
             return getItemOccupancy(itemStack) * itemStack.getCount();
         }).sum();
@@ -222,7 +205,7 @@ public class FishingBag extends BundleItem {
             if (player instanceof ServerPlayerEntity) {
                 NbtList nbtList = nbtCompound.getList("Items", 10);
 
-                for(int i = 0; i < nbtList.size(); ++i) {
+                for (int i = 0; i < nbtList.size(); ++i) {
                     NbtCompound nbtCompound2 = nbtList.getCompound(i);
                     ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
                     player.dropItem(itemStack, true);
@@ -250,12 +233,12 @@ public class FishingBag extends BundleItem {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         Stream<ItemStack> var10000 = getBundledStacks(stack);
         Objects.requireNonNull(defaultedList);
-        var10000.forEach((stack2) -> defaultedList.add( stack2));
+        var10000.forEach((stack2) -> defaultedList.add(stack2));
         return Optional.of(new BundleTooltipData(defaultedList, getBundleOccupancy(stack)));
     }
 
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add((new TranslatableText("item.minecraft.bundle.fullness", new Object[]{getBundleOccupancy(stack), 64})).formatted(Formatting.GRAY));
+        tooltip.add((Text.translatable("item.minecraft.bundle.fullness", new Object[]{getBundleOccupancy(stack), getBundleMax()})).formatted(Formatting.GRAY));
     }
 
     public void onItemEntityDestroyed(ItemEntity entity) {
@@ -272,5 +255,13 @@ public class FishingBag extends BundleItem {
 
     private void playDropContentsSound(Entity entity) {
         entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+    }
+
+    public void setBundleMax(int amount) {
+        this.max_storage = amount;
+    }
+
+    public int getBundleMax() {
+        return this.max_storage;
     }
 }

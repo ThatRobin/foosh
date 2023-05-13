@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld_rod",
   "textures": {
-    "layer0": "foosh:item/bamboo_rod"
+    "layer0": "foosh:item/bamboo_rod_cast"
   }
 }

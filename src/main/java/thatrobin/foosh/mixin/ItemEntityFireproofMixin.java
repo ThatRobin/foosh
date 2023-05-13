@@ -1,6 +1,6 @@
 package thatrobin.foosh.mixin;
 
-import thatrobin.foosh.api.FireproofEntity;
+import thatrobin.foosh.util.FireproofEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
